@@ -13,6 +13,8 @@ namespace Entity
         public int ID { get; set; }
 
         [StringLength(maximumLength: 50)]
+
+        [Display(Name = "Category Name")]
         public string Name { get; set; }
     }
 }

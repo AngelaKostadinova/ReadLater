@@ -15,6 +15,7 @@ namespace Entity
         [StringLength(maximumLength: 500)]
         public string URL { get; set; }
 
+        [Display(Name = "Description")]
         public string ShortDescription { get; set; }
 
         public int? CategoryId { get; set; }
