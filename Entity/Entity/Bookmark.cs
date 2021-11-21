@@ -11,7 +11,6 @@ namespace Entity
     {
         [Key]
         public int ID { get; set; }
-
         [StringLength(maximumLength: 500)]
         public string URL { get; set; }
 
@@ -22,6 +21,6 @@ namespace Entity
 
         public virtual Category Category { get; set; }
 
-        public DateTime CreateDate { get; set; }
+        public DateTime CreateDate { get; set; } = DateTime.Now;
     }
 }

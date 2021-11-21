@@ -24,7 +24,7 @@ namespace Services
         }
         public void UpdateBookmark(Bookmark bookmark)
         {
-            _ReadLaterDataContext.Update(bookmark);
+                _ReadLaterDataContext.Update(bookmark);
             _ReadLaterDataContext.SaveChanges();
         }
 

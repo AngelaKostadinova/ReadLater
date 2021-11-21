@@ -19,12 +19,11 @@
     {
 <tr>
     <td>
-        <a href="@(item.URL)">Bookmark link</a>
         @Html.DisplayFor(modelItem => item.ShortDescription)
     </td>
     <td>
+        <a href="@(item.URL)">Link</a> |
         @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-        @Html.ActionLink("Details", "Details", new { id = item.ID }) |
         @Html.ActionLink("Delete", "Delete", new { id = item.ID })
     </td>
 </tr>}
