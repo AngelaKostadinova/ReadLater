@@ -2,21 +2,17 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Entity
+namespace ReadLater5.Models
 {
-    public class Category
+    public class CategoryViewModel
     {
-        [Key]
         public int ID { get; set; }
 
         [StringLength(maximumLength: 50)]
+
+        [Display(Name = "Category Name")]
         public string Name { get; set; }
-
-        public ApplicationUser User { get; set; }
-
-        public string UserId { get; set; }
     }
 }

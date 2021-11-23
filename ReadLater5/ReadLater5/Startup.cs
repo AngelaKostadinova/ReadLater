@@ -1,4 +1,7 @@
 using Data;
+using Data.Interfaces;
+using Data.Repositories;
+using Entity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -8,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Services;
+using Services.Interfaces;
+using Services.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,11 +37,25 @@ namespace ReadLater5
                    Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ReadLaterDataContext>();
+            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<ReadLaterDataContext>()
+                .AddDefaultTokenProviders();
 
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IBookmarkService, BookmarkService>();
+
+            services.AddTransient<IApplicationUserRepository, ApplicationUserRepository>();
+            services.AddTransient<IRepository<Bookmark>, BookmarkRepository>();
+            services.AddTransient<IRepository<Category>, CategoryRepository>();
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+                options.LoginPath = "/ApplicationUser/Login";
+                options.AccessDeniedPath = "/ApplicationUser/Login";
+                options.SlidingExpiration = true;
+            });
 
             services.AddControllersWithViews();
         }

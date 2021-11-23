@@ -1,11 +1,15 @@
 ﻿using Entity;
 using Microsoft.AspNetCore.Mvc;
 using Services;
+using Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Principal;
+using System.Security.Claims;
 
 namespace ReadLater5.Controllers
 {
@@ -19,7 +23,8 @@ namespace ReadLater5.Controllers
         // GET: Categories
         public IActionResult Index()
         {
-            List<Category> model = _categoryService.GetCategories();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            List<Category> model = _categoryService.GetAllCategories(userId).ToList();
             return View(model);
         }
 
@@ -30,7 +35,8 @@ namespace ReadLater5.Controllers
             {
                 return new StatusCodeResult(Microsoft.AspNetCore.Http.StatusCodes.Status400BadRequest);
             }
-            Category category = _categoryService.GetCategory((int)id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Category category = _categoryService.GetCategoryById((int)id, userId);
             if (category == null)
             {
                 return new StatusCodeResult(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound);
@@ -54,7 +60,8 @@ namespace ReadLater5.Controllers
         {
             if (ModelState.IsValid)
             {
-                _categoryService.CreateCategory(category);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                _categoryService.CreateCategory(category, userId);
                 return RedirectToAction("Index");
             }
 
@@ -68,7 +75,8 @@ namespace ReadLater5.Controllers
             {
                 return new StatusCodeResult(Microsoft.AspNetCore.Http.StatusCodes.Status400BadRequest);
             }
-            Category category = _categoryService.GetCategory((int)id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Category category = _categoryService.GetCategoryById((int)id, userId);
             if (category == null)
             {
                 return new StatusCodeResult(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound);
@@ -85,7 +93,8 @@ namespace ReadLater5.Controllers
         {
             if (ModelState.IsValid)
             {
-                _categoryService.UpdateCategory(category);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                _categoryService.UpdateCategory(category, userId);
                 return RedirectToAction("Index");
             }
             return View(category);
@@ -98,7 +107,8 @@ namespace ReadLater5.Controllers
             {
                 return new StatusCodeResult(Microsoft.AspNetCore.Http.StatusCodes.Status400BadRequest);
             }
-            Category category = _categoryService.GetCategory((int)id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Category category = _categoryService.GetCategoryById((int)id, userId);
             if (category == null)
             {
                 return new StatusCodeResult(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound);
@@ -111,8 +121,9 @@ namespace ReadLater5.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            Category category = _categoryService.GetCategory(id);
-            _categoryService.DeleteCategory(category);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Category category = _categoryService.GetCategoryById((int)id, userId);
+            _categoryService.DeleteCategory(category, userId);
             return RedirectToAction("Index");
         }
     }

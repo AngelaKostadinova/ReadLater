@@ -22,7 +22,7 @@
         @Html.DisplayFor(modelItem => item.ShortDescription)
     </td>
     <td>
-        <a href="@(item.URL)">Link</a> |
+        <a href="@(item.URL)" target="_blank">Link</a> |
         @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
         @Html.ActionLink("Delete", "Delete", new { id = item.ID })
     </td>

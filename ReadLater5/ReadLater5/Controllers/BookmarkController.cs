@@ -1,10 +1,13 @@
 ﻿using Entity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ReadLater5.Models;
 using Services;
+using Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ReadLater5.Controllers
@@ -13,6 +16,7 @@ namespace ReadLater5.Controllers
     {
         IBookmarkService _bookmarkService;
         ICategoryService _categoryService;
+
         public BookmarkController(IBookmarkService bookmarkService, ICategoryService categoryService)
         {
             _bookmarkService = bookmarkService;
@@ -20,7 +24,8 @@ namespace ReadLater5.Controllers
         }
         public IActionResult Index()
         {
-            List<Bookmark> model = _bookmarkService.GetBookmarks();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            List<Bookmark> model = _bookmarkService.GetAllBookmarks(userId).ToList();
             return View(model);
         }
 
@@ -35,7 +40,8 @@ namespace ReadLater5.Controllers
         {
             if (ModelState.IsValid)
             {
-                _bookmarkService.CreateBookmark(bookmark);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                _bookmarkService.CreateBookmark(bookmark, userId);
                 return RedirectToAction("Index");
             }
 
@@ -48,22 +54,8 @@ namespace ReadLater5.Controllers
             {
                 return new StatusCodeResult(Microsoft.AspNetCore.Http.StatusCodes.Status400BadRequest);
             }
-            Bookmark bookmark = _bookmarkService.GetBookmark((int)id);
-            Category category = _categoryService.GetCategory((int)bookmark.CategoryId);
-            bookmark.Category = category;
-
-            //var categodaries = _categoryService.GetCategories();
-
-            //ViewBag.Categodaries = categodaries;
-
-            //List<SelectListItem> ObjList = new List<SelectListItem>()
-            //{
-            //    new SelectListItem { Text = "Latur", Value = "1" },
-            //    new SelectListItem { Text = "Pune", Value = "2" },
-            //    new SelectListItem { Text = "Mumbai", Value = "3" },
-            //    new SelectListItem { Text = "Delhi", Value = "4" },
-
-            //};
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Bookmark bookmark = _bookmarkService.GetBookmarkById((int)id, userId);
 
             if (bookmark == null)
             {
@@ -78,7 +70,8 @@ namespace ReadLater5.Controllers
         {
             if (ModelState.IsValid)
             {
-                _bookmarkService.UpdateBookmark(bookmark);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                _bookmarkService.UpdateBookmark(bookmark, userId);
                 return RedirectToAction("Index");
             }
             return View(bookmark);
@@ -89,7 +82,8 @@ namespace ReadLater5.Controllers
             {
                 return new StatusCodeResult(Microsoft.AspNetCore.Http.StatusCodes.Status400BadRequest);
             }
-            Bookmark bookmark = _bookmarkService.GetBookmark((int)id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Bookmark bookmark = _bookmarkService.GetBookmarkById((int)id, userId);
             if (bookmark == null)
             {
                 return new StatusCodeResult(Microsoft.AspNetCore.Http.StatusCodes.Status404NotFound);
@@ -101,8 +95,9 @@ namespace ReadLater5.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            Bookmark bookmark = _bookmarkService.GetBookmark(id);
-            _bookmarkService.DeleteBookmark(bookmark);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Bookmark bookmark = _bookmarkService.GetBookmarkById(id, userId);
+            _bookmarkService.DeleteBookmark(bookmark, userId);
             return RedirectToAction("Index");
         }
     }
